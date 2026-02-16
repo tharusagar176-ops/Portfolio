@@ -201,16 +201,18 @@ export function Projects() {
 
         {/* View More */}
         <div className={`text-center mt-12 transition-all duration-700 delay-700 animate-fade-in ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <a
-            href={social.github}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button variant="outline" size="lg" className="border-indigo-500/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10">
-              <Github size={20} className="mr-2" />
-              View More on GitHub
-            </Button>
-          </a>
+          {social.github.visible && social.github.url && (
+            <a
+              href={social.github.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" size="lg" className="border-indigo-500/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10">
+                <Github size={20} className="mr-2" />
+                View More on GitHub
+              </Button>
+            </a>
+          )}
         </div>
       </div>
 

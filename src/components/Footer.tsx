@@ -39,21 +39,23 @@ export function Footer() {
             {/* Social Links */}
             <div className="flex gap-3">
               {[
-                { icon: Github, href: social.github, label: 'GitHub' },
-                { icon: Linkedin, href: social.linkedin, label: 'LinkedIn' },
-                { icon: Twitter, href: social.twitter, label: 'Twitter' },
-              ].map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-indigo-600 transition-all"
-                  aria-label={label}
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
+                { icon: Github, link: social.github, label: 'GitHub' },
+                { icon: Linkedin, link: social.linkedin, label: 'LinkedIn' },
+                { icon: Twitter, link: social.twitter, label: 'Twitter' },
+              ]
+                .filter(({ link }) => link.visible && link.url)
+                .map(({ icon: Icon, link, label }) => (
+                  <a
+                    key={label}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-indigo-600 transition-all"
+                    aria-label={label}
+                  >
+                    <Icon size={18} />
+                  </a>
+                ))}
             </div>
           </div>
 
