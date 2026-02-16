@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Trash2, Edit2, Star, Github, ExternalLink, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2, Edit2, Star, Github, ExternalLink, Eye, EyeOff, Upload, X } from 'lucide-react';
 import type { Project } from '@/types/portfolio';
 
 interface ProjectFormProps {
@@ -28,6 +28,7 @@ function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
     featured: false,
   });
   const [tagInput, setTagInput] = useState('');
+  const [imagePreview, setImagePreview] = useState<string>(project?.image || '');
 
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
@@ -38,6 +39,28 @@ function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
 
   const handleRemoveTag = (tag: string) => {
     setFormData(prev => ({ ...prev, tags: prev.tags?.filter(t => t !== tag) || [] }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setFormData(prev => ({ ...prev, image: base64String }));
+        setImagePreview(base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData(prev => ({ ...prev, image: '' }));
+    setImagePreview('');
   };
 
   return (
@@ -67,10 +90,51 @@ function ProjectForm({ project, onSave, onCancel }: ProjectFormProps) {
         <Label className="text-slate-300">Image URL</Label>
         <Input
           value={formData.image}
-          onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
+          onChange={(e) => {
+            setFormData(prev => ({ ...prev, image: e.target.value }));
+            setImagePreview(e.target.value);
+          }}
           placeholder="https://example.com/project-image.jpg"
           className="bg-slate-900 border-slate-600 text-white"
         />
+        <div className="text-sm text-slate-400 text-center my-2">or</div>
+        <div className="space-y-2">
+          <Label htmlFor="image-upload" className="cursor-pointer">
+            <div className="border-2 border-dashed border-slate-600 rounded-lg p-4 hover:border-indigo-500 transition-colors text-center">
+              <Upload className="w-8 h-8 mx-auto mb-2 text-slate-400" />
+              <p className="text-sm text-slate-400">Click to upload image</p>
+              <p className="text-xs text-slate-500 mt-1">PNG, JPG up to 5MB</p>
+            </div>
+          </Label>
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+        </div>
+        {imagePreview && (
+          <div className="relative mt-2">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-full h-48 object-cover rounded-lg"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Invalid+Image';
+              }}
+            />
+            <Button
+              type="button"
+              onClick={handleRemoveImage}
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
