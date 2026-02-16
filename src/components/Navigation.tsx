@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { usePortfolio } from '@/context/PortfolioContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { Menu, X, Code2, Settings } from 'lucide-react';
+import { Menu, X, Code2 } from 'lucide-react';
 
 const navLinks = [
   { label: 'About', href: '#about' },
@@ -103,18 +102,9 @@ export function Navigation() {
               ))}
             </div>
 
-            {/* CTA Button */}
+            {/* CTA Button (no admin/settings on public portfolio) */}
             <div className="hidden md:flex items-center gap-2">
               <ThemeToggle />
-              <Link to="/admin">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
-                >
-                  <Settings size={18} />
-                </Button>
-              </Link>
               <Button
                 onClick={() => scrollToSection('#contact')}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white"
@@ -172,15 +162,6 @@ export function Navigation() {
               <span className="text-gray-600 dark:text-slate-400 text-sm">Theme</span>
               <ThemeToggle />
             </div>
-            <Link to="/admin" className="block">
-              <Button
-                variant="outline"
-                className="w-full border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700"
-              >
-                <Settings size={18} className="mr-2" />
-                Admin Panel
-              </Button>
-            </Link>
             <Button
               onClick={() => scrollToSection('#contact')}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
