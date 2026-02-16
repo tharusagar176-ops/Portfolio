@@ -34,6 +34,7 @@ interface PortfolioContextType {
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'portfolio_admin_data';
+const REMOTE_API_URL = '/api/portfolio-data';
 
 export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<PortfolioData>(() => {
@@ -126,8 +127,54 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     return defaultPortfolioData;
   });
 
+  // Persist to localStorage for the current browser
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [data]);
+
+  // Load persisted data from Netlify (global, cross-device)
+  useEffect(() => {
+    const loadFromServer = async () => {
+      try {
+        const response = await fetch(REMOTE_API_URL);
+        if (!response.ok) return;
+
+        const serverData = await response.json();
+        if (serverData && typeof serverData === 'object') {
+          setData(prev => ({
+            ...prev,
+            ...serverData,
+          }));
+        }
+      } catch {
+        // Ignore network errors and fall back to local/default data
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      void loadFromServer();
+    }
+  }, []);
+
+  // Sync any changes up to Netlify so they are permanent for all visitors
+  useEffect(() => {
+    const syncToServer = async () => {
+      try {
+        await fetch(REMOTE_API_URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+      } catch {
+        // Ignore network errors; local changes will still be saved in this browser
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      void syncToServer();
+    }
   }, [data]);
 
   const updatePersonal = (personal: PortfolioData['personal']) => {
